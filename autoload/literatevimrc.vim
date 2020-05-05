@@ -8,7 +8,7 @@
 " License: Copyright (c) Tyler Cipriani - GPL v.3
 " Version: 0.0.2
 
-if exists("g:loaded_literatevimrc") || &cp
+if exists('g:loaded_literatevimrc') || &cp
     finish
 endif
 
@@ -23,6 +23,14 @@ function! s:starts_codeblock(line) abort
     endif
 
     if line =~# "^ *\\~\\~\\~" && match(line, '\~\~\~') <=# 3
+        return 1
+    endif
+
+    if line =~# "^\#\+BEGIN\_SRC vimrc" && match(line, '\#\+BEGIN\_SRC') <=#3
+        return 1
+    endif
+
+    if line =~# "^\#\+END\_SRC" && match(line, '\#\+END\_SRC') <=#3
         return 1
     endif
 endfunction
@@ -69,7 +77,7 @@ function! s:parse_codeblocks(file) abort
 
     let temp = tempname()
     call writefile(lines, temp)
-    exec "source " . temp
+    exec 'source ' . temp
     " Reload all the plugins since this only happens on initialization
     " This does not seem to be necessary, but was during my testing...
     " runtime! plugin/**/*.vim
@@ -85,3 +93,4 @@ function! literatevimrc#load(path) abort
     endif
     call s:parse_codeblocks(path)
 endfunction
+
